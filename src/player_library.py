@@ -1,21 +1,24 @@
 import json
 
+from utils import Data
 
-class PlayerLibrary:
+
+class PlayerLibrary(Data):
     def __init__(self):
+        super().__init__()
+
         self.m_player_library = {}
         self.m_filename = ""
         self.m_library_loaded = False
-        self.m_ingame_class_list = ['Mage', 'Archer', 'Priest', 'Nightwalker', 'Warrior']
 
-    def load_player_library(self, filename):
+    def load(self, filename):
         with open(filename) as player_library:
             self.m_player_library = json.load(player_library)
 
             self.m_library_loaded = True
             self.m_filename = filename
 
-    def persist_player_library(self):
+    def persist(self):
         if not self.m_library_loaded:
             print("Player Library not loaded!")
             return
@@ -32,3 +35,10 @@ class PlayerLibrary:
 
     def remove_player(self, name):
         del self.m_player_library[name]
+
+    def get_rank(self, name, ingame_class):
+        if name not in self.m_player_library:
+            self.add_player(name)
+
+        return self.m_player_library[name][ingame_class]
+
