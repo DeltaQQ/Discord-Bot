@@ -1,16 +1,8 @@
 import random
 import sys
-import time
 from copy import deepcopy
 
-
-def timer(function):
-    def wrapper(*arg, **kwargs):
-        t1 = time.time()
-        function(*arg, **kwargs)
-        t2 = time.time()
-        print(function.__name__, 'took', t2 - t1, 's')
-    return wrapper
+from utils import timer
 
 
 class Player:
@@ -40,6 +32,9 @@ class PlayerQueue:
 
         return index
 
+    def size(self):
+        return len(self.m_available_players)
+
     def add_player(self, name, ingame_name, ingame_class, rank):
         player = Player(name, ingame_name, ingame_class, rank)
         self.m_available_players.append(player)
@@ -48,27 +43,57 @@ class PlayerQueue:
         index = self.find(condition)
         self.m_available_players.pop(index)
 
-    def avaiable_class_count(self):
-        class_count = {x: 0 for x in self.m_ingame_class_list}
+    def get_count_per_class_dict(self):
+        count_per_class_dict = {x: 0 for x in self.m_ingame_class_list}
 
         for player in self.m_available_players:
-            class_count[player.m_ingame_class] += 1
+            count_per_class_dict[player.m_ingame_class] += 1
 
-        return class_count
+        return count_per_class_dict
 
     def set_lobby_captain(self, captain):
         self.m_lobby_captain = captain
 
-    def generate_teams(self):
-        if len(self.m_available_players) < 10:
-            print("Not enough available players!")
+    def ready_for_matching(self):
+        count_per_class_dict = self.get_count_per_class_dict()
+
+        player_count = self.size()
+
+        if player_count < 10:
+            print("Not enough players available!")
             return
 
-        class_count = self.avaiable_class_count()
+        if count_per_class_dict['Priest'] == 1 and player_count - 1 < 10:
+            print("One Priest missing!")
+            return False
+
+        if (count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) % 2 != 0:
+            if player_count - 1 < 10:
+                print("One Eye missing!")
+                return False
+
+        if count_per_class_dict['Archer'] % 2 != 0:
+            if player_count - 1 < 10:
+                print("One Archer missing!")
+                return False
+
+        if count_per_class_dict['Mage'] % 2 != 0:
+            if player_count - 1 < 10:
+                print("One Archer missing!")
+                return False
+
+        return True
+
+    def generate_teams(self):
+        if self.size() < 10:
+            print("Not enough players available!")
+            return
+
+        count_per_class_dict = self.get_count_per_class_dict()
 
         # Priest selection
 
-        if class_count['Priest'] == 2:
+        if count_per_class_dict['Priest'] == 2:
             index = self.find(lambda player: player.m_ingame_class == 'Priest')
             self.m_team_left.append(self.m_available_players.pop(index))
 
@@ -78,7 +103,7 @@ class PlayerQueue:
         # Eye selection
 
         i = 0
-        number_of_eyes = min(int((class_count['Nightwalker'] + class_count['Warrior']) / 2) * 2, 4)
+        number_of_eyes = min(int((count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) / 2) * 2, 4)
 
         for i in range(number_of_eyes):
             index = self.find(lambda player: player.m_ingame_class == 'Nightwalker')
@@ -102,7 +127,7 @@ class PlayerQueue:
 
         # Archer selection
 
-        number_of_archers = min(int((class_count['Archer']) / 2) * 2, 2)
+        number_of_archers = min(int((count_per_class_dict['Archer']) / 2) * 2, 2)
 
         for i in range(number_of_archers):
             index = self.find(lambda player: player.m_ingame_class == 'Archer')
@@ -116,7 +141,7 @@ class PlayerQueue:
 
         # Mage selection
 
-        number_of_mages = min(int((class_count['Mage']) / 2) * 2, (5 - len(self.m_team_left)) * 2)
+        number_of_mages = min(int((count_per_class_dict['Mage']) / 2) * 2, (5 - len(self.m_team_left)) * 2)
 
         for i in range(number_of_mages):
             index = self.find(lambda player: player.m_ingame_class == 'Mage')
@@ -130,7 +155,7 @@ class PlayerQueue:
 
         # Rest selection
 
-        number_of_archers = min(int((class_count['Archer'] - number_of_archers) / 2) * 2, (5 - len(self.m_team_left)) * 2)
+        number_of_archers = min(int((count_per_class_dict['Archer'] - number_of_archers) / 2) * 2, (5 - len(self.m_team_left)) * 2)
 
         for i in range(number_of_archers):
             index = self.find(lambda player: player.m_ingame_class == 'Archer')
@@ -149,15 +174,15 @@ class PlayerQueue:
         team_left = []
         team_right = []
 
-        class_count = {x: 0 for x in self.m_ingame_class_list}
+        count_per_class_dict = {x: 0 for x in self.m_ingame_class_list}
 
         for player in player_pool:
-            class_count[player.m_ingame_class] += 1
+            count_per_class_dict[player.m_ingame_class] += 1
 
-        players = {x: [] for x in self.m_ingame_class_list}
+        class_player_list_dict = {x: [] for x in self.m_ingame_class_list}
 
         for player in player_pool:
-            players[player.m_ingame_class].append(player)
+            class_player_list_dict[player.m_ingame_class].append(player)
 
         minimal_difference = sys.maxsize
         balanced_team_left = []
@@ -167,19 +192,19 @@ class PlayerQueue:
             team_left.clear()
             team_right.clear()
 
-            for classes in players:
-                if classes == 'Nightwalker' or classes == 'Warrior':
+            for ingame_class in class_player_list_dict:
+                if ingame_class == 'Nightwalker' or ingame_class == 'Warrior':
                     pass
                 else:
-                    players[classes] = random.sample(players[classes], class_count[classes])
+                    class_player_list_dict[ingame_class] = random.sample(class_player_list_dict[ingame_class], count_per_class_dict[ingame_class])
 
-                    team_left += players[classes][0:int(class_count[classes] / 2)]
-                    team_right += players[classes][int(class_count[classes] / 2):class_count[classes]]
+                    team_left += class_player_list_dict[ingame_class][0:int(count_per_class_dict[ingame_class] / 2)]
+                    team_right += class_player_list_dict[ingame_class][int(count_per_class_dict[ingame_class] / 2):count_per_class_dict[ingame_class]]
 
-            eye_list = random.sample(players['Nightwalker'] + players['Warrior'], class_count['Nightwalker'] + class_count['Warrior'])
+            eye_list = random.sample(class_player_list_dict['Nightwalker'] + class_player_list_dict['Warrior'], count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior'])
 
-            team_left += eye_list[0:int((class_count['Nightwalker'] + class_count['Warrior']) / 2)]
-            team_right += eye_list[int((class_count['Nightwalker'] + class_count['Warrior']) / 2):class_count['Nightwalker'] + class_count['Warrior']]
+            team_left += eye_list[0:int((count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) / 2)]
+            team_right += eye_list[int((count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) / 2):count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']]
 
             team_left_value = 0
             team_right_value = 0
@@ -198,3 +223,29 @@ class PlayerQueue:
 
         self.m_team_left = balanced_team_left
         self.m_team_right = balanced_team_right
+
+        sorted_teams = sorted(self.m_team_left + self.m_team_right, key=lambda p: p.m_rank, reverse=True)
+        self.m_lobby_captain = sorted_teams[0]
+
+# Testing
+
+
+player_queue = PlayerQueue()
+
+player_queue.add_player('Cover', 'cover', 'Mage', 1500)
+player_queue.add_player('Cover', 'cover', 'Mage', 1500)
+player_queue.add_player('Cover', 'cover', 'Mage', 1500)
+player_queue.add_player('Cover', 'cover', 'Archer', 1500)
+player_queue.add_player('Cover', 'cover', 'Mage', 1500)
+player_queue.add_player('Cover', 'cover', 'Mage', 1500)
+player_queue.add_player('Cover', 'cover', 'Archer', 3000)
+player_queue.add_player('Cover', 'cover', 'Archer', 1500)
+player_queue.add_player('Cover', 'cover', 'Archer', 500)
+player_queue.add_player('Cover', 'cover', 'Warrior', 1500)
+player_queue.add_player('Cover', 'cover', 'Nightwalker', 1500)
+
+if player_queue.ready_for_matching():
+    player_queue.generate_teams()
+    player_queue.balance_teams()
+
+print("Done")
