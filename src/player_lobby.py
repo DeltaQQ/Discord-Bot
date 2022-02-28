@@ -13,28 +13,91 @@ class PlayerLobby(Data):
         self.m_id = identifier
         self.m_team_left = []
         self.m_team_right = []
-        self.m_lobby_captain = {}
+        self.m_lobby_captain = None
 
-        self.m_ready_message = {}
-        self.m_deploy_message = {}
+        self.m_ready_message = None
+        self.m_deploy_message = None
+        self.m_messages = []
         self.m_ready_player = []
 
     def set_lobby_captain(self, captain):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 10:
+        if len(self.m_ready_player) == 2:
             return True
 
         return False
 
-    def deploy(self):
-        # Deploy the lobby
-        pass
-
     def expired(self):
         # Check if lobby is expired
         pass
+
+    async def notify_everyone(self, channel, message, emoji_list=None):
+        for user in self.m_team_left + self.m_team_right:
+            message += f"<@{user.m_discord_id}>"
+
+        self.m_messages.append(await channel.send(message))
+
+        for emoji in emoji_list:
+            await self.m_messages[-1].add_reaction(emoji)
+
+    async def delete(self):
+        for index, message in enumerate(self.m_messages):
+            await message.delete(delay=3 if index == 0 else 0)
+
+    async def ready_message(self, channel):
+        message = "Ready? Click on the white checkmark! "
+        emoji = '✅'
+
+        for user in self.m_team_left + self.m_team_right:
+            message += f"<@{user.m_discord_id}>"
+
+        self.m_ready_message = await channel.send(message)
+        self.m_messages.append(self.m_ready_message)
+
+        await self.m_ready_message.add_reaction(emoji)
+
+    async def deploy_message(self, channel):
+        deploy_message = "Team Left: "
+
+        for player in self.m_team_left:
+            deploy_message += player.m_ingame_name + ", "
+
+        deploy_message = deploy_message[:-2]
+
+        deploy_message += "\nTeam Right: "
+
+        for player in self.m_team_right:
+            deploy_message += player.m_ingame_name + ", "
+
+        deploy_message = deploy_message[:-2]
+
+        deploy_message += f"\nLobby Captain: <@{self.m_lobby_captain.m_discord_id}>\n"
+        deploy_message += "Please create the lobby and invite everybody!\n"
+        deploy_message += f"Report the match result after the game has finished!!! <@{self.m_lobby_captain.m_discord_id}>\n"
+        deploy_message += ":regional_indicator_l: Left Team won\n"
+        deploy_message += ":regional_indicator_r: Right Team won\n"
+        deploy_message += ":x: to abort the match\n"
+        deploy_message += ":four_leaf_clover: Good luck!\n"
+
+        self.m_deploy_message = await channel.send(deploy_message)
+
+        emoji = '🍀'
+        await self.m_deploy_message.add_reaction(emoji)
+
+        emoji = '🇱'
+        await self.m_deploy_message.add_reaction(emoji)
+
+        emoji = '🇷'
+        await self.m_deploy_message.add_reaction(emoji)
+
+        emoji = '❌'
+        await self.m_deploy_message.add_reaction(emoji)
+
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_team_right + self.m_team_right])
+
+        self.m_messages.append(self.m_deploy_message)
 
     @timer
     def balance_teams(self):

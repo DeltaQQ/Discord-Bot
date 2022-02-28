@@ -12,6 +12,7 @@ from youtube_manager import YoutubeManager
 from player_library import PlayerLibrary
 from player_queue import PlayerQueue
 from player_lobby import PlayerLobby
+from rating_system import update_rating
 
 
 discord_client = commands.Bot(command_prefix='.', help_command=None)
@@ -81,19 +82,18 @@ async def on_reaction_add(reaction, user):
         if lobby.m_deploy_message == reaction.message:
             if user.id == lobby.m_lobby_captain.m_discord_id:
                 if reaction.emoji == '🇱':
-                    # Adjust ranks and clear the lobby
-                    pass
+                    update_rating(player_library, lobby.m_team_left, lobby.m_team_right)
 
                 if reaction.emoji == '🇷':
-                    # Adjust ranks and clear the lobby
-                    pass
+                    update_rating(player_library, lobby.m_team_right, lobby.m_team_left)
 
                 if reaction.emoji == '❌':
-                    # Clear the lobby
-                    pass
+                    message = "Match aborted! Please register in the queue again! "
+                    await lobby.notify_everyone(reaction.message.channel, message)
 
-                await lobby.m_ready_message.delete(delay=3)
-                await lobby.m_deploy_message.delete()
+                await lobby.delete()
+                player_lobbies.remove(lobby)
+                await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
 
         if lobby.m_ready_message == reaction.message:
             if str(user) not in lobby.m_team_left or str(user) not in lobby.m_team_right:
@@ -103,48 +103,7 @@ async def on_reaction_add(reaction, user):
                 lobby.m_ready_player.append(str(user))
 
             if lobby.ready() and not lobby.expired():
-                channel = reaction.message.channel
-
-                deploy_message = ""
-                deploy_message += "Team Left: "
-
-                for player in lobby.m_team_left:
-                    deploy_message += player.m_ingame_name + ", "
-
-                deploy_message = deploy_message[:-2]
-
-                deploy_message += "\nTeam Right: "
-
-                for player in lobby.m_team_right:
-                    deploy_message += player.m_ingame_name + ", "
-
-                deploy_message = deploy_message[:-2]
-
-                deploy_message += f"\nLobby Captain: <@{lobby.m_lobby_captain.m_discord_id}>\n"
-                deploy_message += "Please create the lobby and invite everybody!\n"
-                deploy_message += f"Report the match result after the game has finished!!! <@{lobby.m_lobby_captain.m_discord_id}>\n"
-                deploy_message += ":regional_indicator_l: Left Team won\n"
-                deploy_message += ":regional_indicator_r: Right Team won\n"
-                deploy_message += ":x: to abort the match\n"
-                deploy_message += ":four_leaf_clover: Good luck!\n"
-
-                lobby.m_deploy_message = await channel.send(deploy_message)
-
-                emoji = '🍀'
-                await lobby.m_deploy_message.add_reaction(emoji)
-
-                emoji = '🇱'
-                await lobby.m_deploy_message.add_reaction(emoji)
-
-                emoji = '🇷'
-                await lobby.m_deploy_message.add_reaction(emoji)
-
-                emoji = '❌'
-                await lobby.m_deploy_message.add_reaction(emoji)
-
-                await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in lobby.m_team_right + lobby.m_team_right])
-
-                lobby.deploy()
+                await lobby.deploy_message(reaction.message.channel)
                 print("Deploy!")
 
 
@@ -164,10 +123,16 @@ async def join(ctx):
 
 @discord_client.command()
 async def leave(ctx):
-    if not is_connected_to_channel(ctx):
-        return
+    if ctx.channel.id == discord_channels['bot-commands']:
+        if not is_connected_to_channel(ctx):
+            return
 
-    await ctx.voice_client.disconnect()
+        await ctx.voice_client.disconnect()
+
+    if ctx.channel.id == discord_channels['bg-queue']:
+        player_queue.remove_player(lambda p: p.m_name == str(ctx.author))
+
+        await ctx.channel.purge(check=lambda m: m.author == ctx.author)
 
 
 @discord_client.command()
@@ -231,28 +196,38 @@ async def queue(ctx, ingame_name, ingame_class):
         return
 
     name = str(ctx.message.author)
-    rank = player_library.get_rank(name, ingame_class)
+    rating = player_library.get_rank(name, ingame_class)
 
     if not player_queue.already_in_queue(name):
-        player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rank)
+        player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rating)
 
     if player_queue.ready_for_matching():
         player_lobby = PlayerLobby(lobby_id)
         player_queue.generate_player_lobby(player_lobby)
         player_lobby.balance_teams()
 
-        message = "Ready? Click on the white checkmark! "
-        for user in player_lobby.m_team_left + player_lobby.m_team_right:
-            message += f"<@{user.m_discord_id}>"
-
-        player_lobby.m_ready_message = await ctx.send(message)
-
-        emoji = '✅'
-        await player_lobby.m_ready_message.add_reaction(emoji)
+        await player_lobby.ready_message(ctx.channel)
 
         player_library.persist()
         player_lobbies.append(player_lobby)
         print("Lobby is ready!")
+
+
+@discord_client.command()
+async def rank(ctx, ingame_class):
+    if not ctx.channel.id == discord_channels['bot-commands']:
+        return
+
+    message = f"Your current rating on {ingame_class} is {player_library.get_rank(str(ctx.author), ingame_class)}"
+    await ctx.channel.send(message)
+
+
+@discord_client.command()
+async def purge(ctx):
+    if not ctx.author.top_role.name == 'Admin':
+        return
+
+    await ctx.channel.purge()
 
 
 # Helpers

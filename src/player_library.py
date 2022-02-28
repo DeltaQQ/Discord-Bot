@@ -1,4 +1,5 @@
 import json
+import operator
 
 from utils import Data
 
@@ -40,5 +41,25 @@ class PlayerLibrary(Data):
         if name not in self.m_player_library:
             self.add_player(name)
 
-        return self.m_player_library[name][ingame_class]
+        return int(self.m_player_library[name][ingame_class])
 
+    async def print_leaderboard(self, channel):
+        await channel.purge()
+
+        list_everyone = []
+
+        for player in self.m_player_library:
+            for ingame_class in self.m_player_library[player]:
+                rank = self.get_rank(player, ingame_class)
+                if rank != 1000:
+                    list_everyone.append((player, ingame_class, rank))
+
+        list_everyone.sort(key=operator.itemgetter(2), reverse=True)
+
+        end_index = min(len(list_everyone), 50)
+
+        message = ""
+        for i in range(end_index):
+            message += f"{i + 1}. {list_everyone[i][0]} {list_everyone[i][1]} {list_everyone[i][2]}\n"
+
+        await channel.send(message)
