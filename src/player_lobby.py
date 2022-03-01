@@ -167,5 +167,5 @@ class PlayerLobby(Data):
         self.m_team_left = balanced_team_left
         self.m_team_right = balanced_team_right
 
-        sorted_teams = sorted(self.m_team_left + self.m_team_right, key=lambda p: p.m_rank, reverse=True)
+        sorted_teams = sorted(self.m_team_left, key=lambda p: p.m_rank, reverse=True)
         self.set_lobby_captain(sorted_teams[0])
