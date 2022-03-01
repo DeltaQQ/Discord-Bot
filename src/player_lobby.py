@@ -25,7 +25,7 @@ class PlayerLobby(Data):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 10:
+        if len(self.m_ready_player) == 3:
             return True
 
         return False
@@ -48,14 +48,15 @@ class PlayerLobby(Data):
 
         self.m_messages.append(await channel.send(message))
 
-        for emoji in emoji_list:
-            await self.m_messages[-1].add_reaction(emoji)
+        if emoji_list:
+            for emoji in emoji_list:
+                await self.m_messages[-1].add_reaction(emoji)
 
     async def delete(self, channel):
         for index, message in enumerate(self.m_messages):
             await message.delete(delay=10 if index == len(self.m_messages) - 1 else 0)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_team_right + self.m_team_right])
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_right)])
 
     async def ready_message(self, channel):
         message = "Ready? Click on the white checkmark! "
@@ -136,7 +137,7 @@ class PlayerLobby(Data):
             team_right.clear()
 
             for ingame_class in class_player_list_dict:
-                if ingame_class == 'Nightwalker' or ingame_class == 'Warrior':
+                if ingame_class == 'nightwalker' or ingame_class == 'warrior':
                     pass
                 else:
                     class_player_list_dict[ingame_class] = random.sample(class_player_list_dict[ingame_class], count_per_class_dict[ingame_class])
@@ -144,10 +145,10 @@ class PlayerLobby(Data):
                     team_left += class_player_list_dict[ingame_class][0:int(count_per_class_dict[ingame_class] / 2)]
                     team_right += class_player_list_dict[ingame_class][int(count_per_class_dict[ingame_class] / 2):count_per_class_dict[ingame_class]]
 
-            eye_list = random.sample(class_player_list_dict['Nightwalker'] + class_player_list_dict['Warrior'], count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior'])
+            eye_list = random.sample(class_player_list_dict['nightwalker'] + class_player_list_dict['warrior'], count_per_class_dict['nightwalker'] + count_per_class_dict['warrior'])
 
-            team_left += eye_list[0:int((count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) / 2)]
-            team_right += eye_list[int((count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']) / 2):count_per_class_dict['Nightwalker'] + count_per_class_dict['Warrior']]
+            team_left += eye_list[0:int((count_per_class_dict['nightwalker'] + count_per_class_dict['warrior']) / 2)]
+            team_right += eye_list[int((count_per_class_dict['nightwalker'] + count_per_class_dict['warrior']) / 2):count_per_class_dict['nightwalker'] + count_per_class_dict['warrior']]
 
             team_left_value = 0
             team_right_value = 0

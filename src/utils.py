@@ -12,4 +12,4 @@ def timer(function):
 
 class Data:
     def __init__(self):
-        self.m_ingame_class_list = ['Mage', 'Archer', 'Priest', 'Nightwalker', 'Warrior']
+        self.m_ingame_class_list = ['mage', 'archer', 'priest', 'nightwalker', 'warrior']

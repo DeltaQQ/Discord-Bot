@@ -82,23 +82,24 @@ async def on_reaction_add(reaction, user):
             if user.id == lobby.m_lobby_captain.m_discord_id:
                 if reaction.emoji == '🇱':
                     update_rating(player_library, lobby.m_team_left, lobby.m_team_right)
+                    await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
 
                 if reaction.emoji == '🇷':
                     update_rating(player_library, lobby.m_team_right, lobby.m_team_left)
+                    await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
 
                 if reaction.emoji == '❌':
                     message = "Match aborted! Please register in the queue again! "
                     await lobby.notify_everyone(reaction.message.channel, message)
 
-                await lobby.delete()
+                await lobby.delete(reaction.message.channel)
                 player_lobbies.remove(lobby)
-                await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
 
         if lobby.m_ready_message == reaction.message:
             if str(user) not in lobby.m_team_left or str(user) not in lobby.m_team_right:
                 continue
 
-            if str(user) not in lobby.m_ready_player or True:
+            if str(user) not in lobby.m_ready_player:
                 lobby.m_ready_player.append(str(user))
 
             if lobby.ready():
@@ -112,6 +113,8 @@ async def on_reaction_add(reaction, user):
 @discord_client.command()
 async def join(ctx, ingame_name=None, ingame_class=None):
     if ctx.message.channel.id == discord_channels['bg-queue']:
+        ingame_class = ingame_class.lower()
+
         if ingame_class not in player_library.m_ingame_class_list:
             print("Invalid class argument")
             return
@@ -119,7 +122,7 @@ async def join(ctx, ingame_name=None, ingame_class=None):
         name = str(ctx.message.author)
         rating = player_library.get_rank(name, ingame_class)
 
-        if not player_queue.already_in_queue(name):
+        if not player_queue.already_in_queue(name) or True:
             print(f"{name} joined the queue")
             player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rating)
 
