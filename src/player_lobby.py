@@ -1,3 +1,4 @@
+import asyncio
 import random
 import sys
 from copy import deepcopy
@@ -24,14 +25,22 @@ class PlayerLobby(Data):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 2:
+        if len(self.m_ready_player) == 10:
             return True
 
         return False
 
-    def expired(self):
-        # Check if lobby is expired
-        pass
+    async def expired(self, player_lobbies, channel):
+        await asyncio.sleep(60)
+
+        if not self.ready():
+            message = "Lobby expired and will be deleted shortly!"
+            emoji = ['😦']
+
+            await self.notify_everyone(channel, message, emoji)
+            await self.delete(channel)
+
+            player_lobbies.remove(self)
 
     async def notify_everyone(self, channel, message, emoji_list=None):
         for user in self.m_team_left + self.m_team_right:
@@ -42,9 +51,11 @@ class PlayerLobby(Data):
         for emoji in emoji_list:
             await self.m_messages[-1].add_reaction(emoji)
 
-    async def delete(self):
+    async def delete(self, channel):
         for index, message in enumerate(self.m_messages):
-            await message.delete(delay=3 if index == 0 else 0)
+            await message.delete(delay=10 if index == len(self.m_messages) - 1 else 0)
+
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_team_right + self.m_team_right])
 
     async def ready_message(self, channel):
         message = "Ready? Click on the white checkmark! "

@@ -35,8 +35,6 @@ class PlayerQueue(Data):
         return len(self.m_available_players)
 
     def already_in_queue(self, name):
-        return False
-
         for player in self.m_available_players:
             if name in player.m_name:
                 return True

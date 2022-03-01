@@ -1,6 +1,5 @@
+import asyncio
 import json
-import time
-import _thread
 
 from os import getenv
 from discord.ext import commands
@@ -35,7 +34,7 @@ with open('discord_channels.json') as json_file:
     discord_channels = json.load(json_file)
 
 
-def on_update():
+async def on_update():
     first_post = True
 
     while True:
@@ -46,12 +45,12 @@ def on_update():
                 message = youtube_manager.m_youtube_channels['Cover']['message'] + "\n" + str(url)
                 channel_id = youtube_manager.m_youtube_channels['Cover']['discordChannelID']
 
-                discord_client.loop.create_task(send_message_to_channel(channel_id, message))
+                await send_message_to_channel(channel_id, message)
                 first_post = False
         else:
             first_post = True
 
-        time.sleep(5)
+        await asyncio.sleep(5)
 
 
 async def send_message_to_channel(channel_id, message):
@@ -65,7 +64,7 @@ async def send_message_to_channel(channel_id, message):
 @discord_client.event
 async def on_ready():
     print("Successfully logged in as {0.user}".format(discord_client))
-    _thread.start_new_thread(on_update, ())
+    discord_client.loop.create_task(on_update())
 
 
 @discord_client.event
@@ -102,7 +101,7 @@ async def on_reaction_add(reaction, user):
             if str(user) not in lobby.m_ready_player or True:
                 lobby.m_ready_player.append(str(user))
 
-            if lobby.ready() and not lobby.expired():
+            if lobby.ready():
                 await lobby.deploy_message(reaction.message.channel)
                 print("Deploy!")
 
@@ -137,11 +136,17 @@ async def leave(ctx):
 
 @discord_client.command()
 async def submit(ctx, url):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     music_queue.submit_url(url)
 
 
 @discord_client.command()
 async def play(ctx):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
     if voice_client.is_playing():
@@ -153,6 +158,9 @@ async def play(ctx):
 
 @discord_client.command()
 async def pause(ctx):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
     if not voice_client.is_playing():
@@ -163,6 +171,9 @@ async def pause(ctx):
 
 @discord_client.command()
 async def resume(ctx):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
     if voice_client.is_paused():
@@ -171,17 +182,26 @@ async def resume(ctx):
 
 @discord_client.command()
 async def skip(ctx):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
     voice_client.stop()
 
 
 @discord_client.command()
 async def clear(ctx):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     music_queue.clear()
 
 
 @discord_client.command()
 async def loop(ctx, url, repeat_count):
+    if ctx.channel.id == discord_channels['bot-commands']:
+        return
+
     for i in range(int(repeat_count)):
         music_queue.submit_url(url)
 
@@ -207,6 +227,8 @@ async def queue(ctx, ingame_name, ingame_class):
         player_lobby.balance_teams()
 
         await player_lobby.ready_message(ctx.channel)
+        task = player_lobby.expired(player_lobbies, discord_client.get_channel(discord_channels['bg-queue']))
+        asyncio.create_task(task)
 
         player_library.persist()
         player_lobbies.append(player_lobby)
