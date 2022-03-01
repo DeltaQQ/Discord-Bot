@@ -1,3 +1,5 @@
+from typing import List
+
 from player_queue import Player
 from player_library import PlayerLibrary
 
@@ -5,7 +7,7 @@ from player_library import PlayerLibrary
 # https://en.wikipedia.org/wiki/Elo_rating_system for reference
 
 
-def update_rating(player_library: PlayerLibrary, winner: list[Player], loser: list[Player]):
+def update_rating(player_library: PlayerLibrary, winner: List[Player], loser: List[Player]):
     r_winner = 0
     for player in winner:
         r_winner += player.m_rank

@@ -96,7 +96,7 @@ async def on_reaction_add(reaction, user):
                 player_lobbies.remove(lobby)
 
         if lobby.m_ready_message == reaction.message:
-            if str(user) not in lobby.m_team_left or str(user) not in lobby.m_team_right:
+            if not(str(user) in lobby.m_team_left or str(user) in lobby.m_team_right):
                 continue
 
             if str(user) not in lobby.m_ready_player:

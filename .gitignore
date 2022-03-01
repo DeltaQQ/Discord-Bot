@@ -4,3 +4,7 @@ src/__pycache__/
 *.iml
 *.xml
 *.idea
+*.lock
+*.txt
+
+Pipfile
