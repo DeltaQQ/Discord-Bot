@@ -60,6 +60,6 @@ class PlayerLibrary(Data):
 
         message = ""
         for i in range(end_index):
-            message += f"{i + 1}. {list_everyone[i][0]} {list_everyone[i][1]} {list_everyone[i][2]}\n"
+            message += f"{i + 1}. {list_everyone[i][0]} {list_everyone[i][1].capitalize()} {list_everyone[i][2]}\n"
 
         await channel.send(message)

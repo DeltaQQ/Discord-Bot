@@ -25,7 +25,7 @@ class PlayerLobby(Data):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 3:
+        if len(self.m_ready_player) == 10:
             return True
 
         return False

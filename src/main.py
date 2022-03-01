@@ -2,6 +2,8 @@ import asyncio
 import json
 
 from os import getenv
+
+import discord.message
 from discord.ext import commands
 from discord.utils import get
 
@@ -32,6 +34,8 @@ player_lobbies = []
 # This has to be somewhere else
 with open('discord_channels.json') as json_file:
     discord_channels = json.load(json_file)
+
+discord_command_only_channels = [discord_channels['bg-queue'], discord_channels['bot-commands']]
 
 
 async def on_update():
@@ -72,6 +76,10 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    if message.channel.id in discord_command_only_channels:
+        if not message.content.startswith('.'):
+            raise Exception
+
     await discord_client.process_commands(message)
 
 
@@ -107,6 +115,17 @@ async def on_reaction_add(reaction, user):
                 print("Deploy!")
 
 
+@discord_client.event
+async def on_command_error(ctx, error):
+    await ctx.message.delete()
+
+
+@discord_client.event
+async def on_error(event, *args, **kwargs):
+    channel = args[0].channel
+    await channel.purge(limit=1, check=lambda m: m.author.id == args[0].author.id)
+
+
 # Commands
 
 
@@ -117,12 +136,12 @@ async def join(ctx, ingame_name=None, ingame_class=None):
 
         if ingame_class not in player_library.m_ingame_class_list:
             print("Invalid class argument")
-            return
+            raise Exception
 
         name = str(ctx.message.author)
         rating = player_library.get_rank(name, ingame_class)
 
-        if not player_queue.already_in_queue(name) or True:
+        if not player_queue.already_in_queue(name):
             print(f"{name} joined the queue")
             player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rating)
 
@@ -138,8 +157,7 @@ async def join(ctx, ingame_name=None, ingame_class=None):
             player_library.persist()
             player_lobbies.append(player_lobby)
             print("Lobby is ready!")
-
-    if ctx.message.channel.id == discord_channels['bot-commands']:
+    elif ctx.message.channel.id == discord_channels['bot-commands']:
         if is_connected_to_channel(ctx):
             await ctx.voice_client.disconnect()
 
@@ -147,6 +165,8 @@ async def join(ctx, ingame_name=None, ingame_class=None):
         await channel.connect()
 
         music_queue.set_voice_client(get(ctx.bot.voice_clients, guild=ctx.guild))
+    else:
+        raise Exception
 
 
 @discord_client.command()
@@ -156,19 +176,20 @@ async def leave(ctx):
             return
 
         await ctx.voice_client.disconnect()
-
-    if ctx.channel.id == discord_channels['bg-queue']:
+    elif ctx.channel.id == discord_channels['bg-queue']:
         if player_queue.already_in_queue(str(ctx.author)):
             player_queue.remove_player(lambda p: p.m_name == str(ctx.author))
             print(f"{str(ctx.author)} left the queue")
 
             await ctx.channel.purge(check=lambda m: m.author == ctx.author)
+    else:
+        raise Exception
 
 
 @discord_client.command()
 async def submit(ctx, url):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     music_queue.submit_url(url)
 
@@ -176,7 +197,7 @@ async def submit(ctx, url):
 @discord_client.command()
 async def play(ctx):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
@@ -190,7 +211,7 @@ async def play(ctx):
 @discord_client.command()
 async def pause(ctx):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
@@ -203,7 +224,7 @@ async def pause(ctx):
 @discord_client.command()
 async def resume(ctx):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
 
@@ -214,7 +235,7 @@ async def resume(ctx):
 @discord_client.command()
 async def skip(ctx):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     voice_client = get(ctx.bot.voice_clients, guild=ctx.guild)
     voice_client.stop()
@@ -231,7 +252,7 @@ async def clear(ctx):
 @discord_client.command()
 async def loop(ctx, url, repeat_count):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     for i in range(int(repeat_count)):
         music_queue.submit_url(url)
@@ -240,7 +261,7 @@ async def loop(ctx, url, repeat_count):
 @discord_client.command()
 async def rank(ctx, ingame_class):
     if ctx.channel.id != discord_channels['bot-commands']:
-        return
+        raise Exception
 
     message = f"Your current rating on {ingame_class} is {player_library.get_rank(str(ctx.author), ingame_class)} <@{ctx.author.id}>"
     await ctx.channel.send(message)
