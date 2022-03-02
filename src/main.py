@@ -3,7 +3,6 @@ import json
 
 from os import getenv
 
-import discord.message
 from discord.ext import commands
 from discord.utils import get
 
@@ -144,6 +143,9 @@ async def join(ctx, ingame_name=None, ingame_class=None):
         if not player_queue.already_in_queue(name):
             print(f"{name} joined the queue")
             player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rating)
+        else:
+            print(f"{name} is already in the queue")
+            ctx.message.delete()
 
         if player_queue.ready_for_matching():
             player_lobby = PlayerLobby(lobby_id)

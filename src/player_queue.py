@@ -82,7 +82,7 @@ class PlayerQueue(Data):
 
         if count_per_class_dict['mage'] % 2 != 0:
             if player_count - 1 < 10:
-                print("One Archer missing!")
+                print("One Mage missing!")
                 return False
 
         return True

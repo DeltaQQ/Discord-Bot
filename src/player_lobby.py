@@ -107,7 +107,7 @@ class PlayerLobby(Data):
         emoji = '❌'
         await self.m_deploy_message.add_reaction(emoji)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_team_right + self.m_team_right])
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_right)])
 
         self.m_messages.append(self.m_deploy_message)
 
