@@ -56,7 +56,7 @@ class PlayerLobby(Data):
         for index, message in enumerate(self.m_messages):
             await message.delete(delay=10 if index == len(self.m_messages) - 1 else 0)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_right)])
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_left)])
 
     async def ready_message(self, channel):
         message = "Ready? Click on the white checkmark! "
@@ -107,7 +107,7 @@ class PlayerLobby(Data):
         emoji = '❌'
         await self.m_deploy_message.add_reaction(emoji)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_right)])
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_left)])
 
         self.m_messages.append(self.m_deploy_message)
 
