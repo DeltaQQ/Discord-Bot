@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 
 from os import getenv
 
@@ -10,7 +11,7 @@ from music_queue import MusicQueue
 from youtube_manager import YoutubeManager
 
 from player_library import PlayerLibrary
-from player_queue import PlayerQueue
+from player_queue import PlayerQueue, Player
 from player_lobby import PlayerLobby
 from rating_system import update_rating
 
@@ -142,7 +143,15 @@ async def join(ctx, ingame_name=None, ingame_class=None):
 
         if not player_queue.already_in_queue(name):
             print(f"{name} joined the queue")
-            player_queue.add_player(ctx.message.author.id, name, ingame_name, ingame_class, rating)
+            player = Player(ctx.author.id, name, ingame_name, ingame_class, rating)
+            player.m_in_queue = True
+            player.m_queue_join_time = time.time()
+
+            # Schedules a check after one hour to remove idle players from the queue
+            task = player.expired(player_queue, ctx.channel)
+            asyncio.create_task(task)
+
+            player_queue.add_player(player)
         else:
             print(f"{name} is already in the queue")
             ctx.message.delete()

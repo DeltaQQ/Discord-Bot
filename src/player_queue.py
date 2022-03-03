@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 from utils import Data
 
 
@@ -8,6 +11,8 @@ class Player:
         self.m_ingame_name = ingame_name
         self.m_ingame_class = ingame_class
         self.m_rank = rank
+        self.m_in_queue = False
+        self.m_queue_join_time = 0
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -15,6 +20,13 @@ class Player:
 
         if isinstance(other, Player):
             return self.m_name == other.m_name
+
+    async def expired(self, player_queue, channel):
+        await asyncio.sleep(3600)
+
+        if (time.time() - self.m_queue_join_time) >= 3600:
+            player_queue.remove_player(lambda p: p.m_name == self.m_name)
+            await channel.purge(check=lambda m: m.author.id == self.m_discord_id)
 
 
 class PlayerQueue(Data):
@@ -41,8 +53,7 @@ class PlayerQueue(Data):
 
         return False
 
-    def add_player(self, discord_id, name, ingame_name, ingame_class, rank):
-        player = Player(discord_id, name, ingame_name, ingame_class, rank)
+    def add_player(self, player):
         self.m_available_players.append(player)
 
     def remove_player(self, condition):
