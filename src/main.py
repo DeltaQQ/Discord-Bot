@@ -2,7 +2,7 @@ import asyncio
 import json
 import time
 
-from os import getenv
+import configparser
 
 from discord.ext import commands
 from discord.utils import get
@@ -19,11 +19,15 @@ from rating_system import update_rating
 discord_client = commands.Bot(command_prefix='.', help_command=None)
 
 
-youtube_manager = YoutubeManager(getenv('YOUTUBE_API_KEY'))
+config = configparser.ConfigParser()
+config.read('../data/config.ini')
+
+youtube_manager = YoutubeManager()
 music_queue = MusicQueue()
 
 player_library = PlayerLibrary()
-player_library.load('player_library.json')
+player_library.load('../data/player_library.json')
+
 
 player_queue = PlayerQueue()
 
@@ -32,7 +36,7 @@ player_lobbies = []
 
 
 # This has to be somewhere else
-with open('discord_channels.json') as json_file:
+with open('../data/discord_channels.json') as json_file:
     discord_channels = json.load(json_file)
 
 discord_command_only_channels = [discord_channels['bg-queue'], discord_channels['bot-commands']]
@@ -90,11 +94,11 @@ async def on_reaction_add(reaction, user):
             if user.id == lobby.m_lobby_captain.m_discord_id:
                 if reaction.emoji == '🇱':
                     update_rating(player_library, lobby.m_team_left, lobby.m_team_right)
-                    await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
+                    player_library.update_ranking('../data/player_ranking.json')
 
                 if reaction.emoji == '🇷':
                     update_rating(player_library, lobby.m_team_right, lobby.m_team_left)
-                    await player_library.print_leaderboard(discord_client.get_channel(discord_channels['battleground']))
+                    player_library.update_ranking('../data/player_ranking.json')
 
                 if reaction.emoji == '❌':
                     message = "Match aborted! Please register in the queue again! "
@@ -294,5 +298,4 @@ def is_connected_to_channel(ctx):
     return voice_client and voice_client.is_connected()
 
 
-discord_client.run(getenv('DISCORD_TOKEN'))
-youtube_manager.shutdown()
+discord_client.run(config['Sensitive']['DISCORD_TOKEN'])

@@ -1,5 +1,7 @@
 import json
 import operator
+import os
+import sys
 
 from utils import Data
 
@@ -43,9 +45,7 @@ class PlayerLibrary(Data):
 
         return self.m_player_library[name][ingame_class]
 
-    async def print_leaderboard(self, channel):
-        await channel.purge()
-
+    def update_ranking(self, filename):
         list_everyone = []
 
         for player in self.m_player_library:
@@ -58,8 +58,13 @@ class PlayerLibrary(Data):
 
         end_index = min(len(list_everyone), 50)
 
-        message = ""
-        for i in range(end_index):
-            message += f"{i + 1}. {list_everyone[i][0]} {list_everyone[i][1].capitalize()} {list_everyone[i][2]}\n"
+        player_ranking = {}
 
-        await channel.send(message)
+        for i in range(end_index):
+            player_ranking[list_everyone[i][0]] = [list_everyone[i][1].capitalize(), list_everyone[i][2]]
+
+        with open(filename, 'w') as json_file:
+            json.dump(player_ranking, json_file, indent=4)
+
+        if sys.platform == "linux" or sys.platform == "linux2":
+            os.system('sudo cp ../data/player_ranking.json /var/www/html/')

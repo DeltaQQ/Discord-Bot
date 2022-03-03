@@ -1,0 +1,44 @@
+body {
+  background-color: #272727;
+}
+
+h1 {
+  background-color: inherit;
+  background-size: cover;
+  color: #ecd19a;
+  text-align: center;
+  text-shadow: 0 0 1px transparent, 0 0 5px rgb(0 0 0 / 95%);
+  font-family: "Cinzel Decorative", Raleway, cursive;
+  font-weight: lighter;
+}
+
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#ranking-table {
+  align-items: center;
+  color: #ecd19a;
+  font-family: "Marcellus", serif;
+  font-size: 0.85rem;
+  text-shadow: 0 0 1px transparent, 0 0 15px rgb(0 0 0 / 80%);
+  border: 1px solid #ecd19a8a;
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+td {
+  padding: 0.75rem;
+  font-family: "Marcellus", serif;
+  text-shadow: 0 0 1px transparent, 0 0 15px rgb(0 0 0 / 80%);
+  text-decoration: none;
+  text-align: center;
+}
+
+th {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
