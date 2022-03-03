@@ -274,7 +274,7 @@ async def rank(ctx, ingame_class):
     if ctx.channel.id != discord_channels['bot-commands']:
         raise Exception
 
-    message = f"Your current rating on {ingame_class} is {player_library.get_rank(str(ctx.author), ingame_class)} <@{ctx.author.id}>"
+    message = f"Your current rating on {ingame_class.capitalize()} is {int(player_library.get_rank(str(ctx.author), ingame_class))} <@{ctx.author.id}>"
     await ctx.channel.send(message)
 
 

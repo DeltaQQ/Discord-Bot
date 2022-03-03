@@ -41,7 +41,7 @@ class PlayerLibrary(Data):
         if name not in self.m_player_library:
             self.add_player(name)
 
-        return int(self.m_player_library[name][ingame_class])
+        return self.m_player_library[name][ingame_class]
 
     async def print_leaderboard(self, channel):
         await channel.purge()
@@ -51,8 +51,8 @@ class PlayerLibrary(Data):
         for player in self.m_player_library:
             for ingame_class in self.m_player_library[player]:
                 rank = self.get_rank(player, ingame_class)
-                if rank != 1000:
-                    list_everyone.append((player, ingame_class, rank))
+                if rank != 1000.0:
+                    list_everyone.append((player, ingame_class, int(rank)))
 
         list_everyone.sort(key=operator.itemgetter(2), reverse=True)
 
