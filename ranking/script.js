@@ -10,25 +10,23 @@ async function generateRankingTable() {
 
     let table = document.getElementById("ranking-table");
 
-    index = 1;
-
-    for (var player in playerData) {
+    for (var index in playerData) {
         let tboddy = table.createTBody();
         row = tboddy.insertRow();
         let cell = row.insertCell();
-        text = document.createTextNode(`${index++}`);
+        text = document.createTextNode(index);
         cell.appendChild(text); 
     
         cell = row.insertCell();
-        text = document.createTextNode(player);
+        text = document.createTextNode(playerData[index][0]);
         cell.appendChild(text); 
     
         cell = row.insertCell();
-        text = document.createTextNode(playerData[player][0]);
+        text = document.createTextNode(playerData[index][1]);
         cell.appendChild(text); 
     
         cell = row.insertCell();
-        text = document.createTextNode(playerData[player][1]);
+        text = document.createTextNode(playerData[index][2]);
         cell.appendChild(text); 
     }
 }

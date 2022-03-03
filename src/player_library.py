@@ -61,9 +61,10 @@ class PlayerLibrary(Data):
         player_ranking = {}
 
         for i in range(end_index):
-            player_ranking[list_everyone[i][0]] = [list_everyone[i][1].capitalize(), list_everyone[i][2]]
+            player_ranking[i + 1] = [list_everyone[i][0], list_everyone[i][1].capitalize(), list_everyone[i][2]]
 
         with open(filename, 'w') as json_file:
+            json_file.flush()
             json.dump(player_ranking, json_file, indent=4)
 
         if sys.platform == "linux" or sys.platform == "linux2":

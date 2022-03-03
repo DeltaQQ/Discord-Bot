@@ -25,8 +25,9 @@ class Player:
         await asyncio.sleep(3600)
 
         if (time.time() - self.m_queue_join_time) >= 3600:
-            player_queue.remove_player(lambda p: p.m_name == self.m_name)
-            await channel.purge(check=lambda m: m.author.id == self.m_discord_id)
+            if player_queue.find(lambda p: p.m_name == self.m_name) != len(player_queue):
+                player_queue.remove_player(lambda p: p.m_name == self.m_name)
+                await channel.purge(check=lambda m: m.author.id == self.m_discord_id)
 
 
 class PlayerQueue(Data):

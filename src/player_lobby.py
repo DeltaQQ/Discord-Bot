@@ -31,7 +31,7 @@ class PlayerLobby(Data):
         return False
 
     async def expired(self, player_lobbies, channel):
-        await asyncio.sleep(60)
+        await asyncio.sleep(180)
 
         if not self.ready():
             message = "Lobby expired and will be deleted shortly!"

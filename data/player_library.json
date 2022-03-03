@@ -2,7 +2,7 @@
     "Delta#6534": {
         "mage": 1000,
         "archer": 1000,
-        "priest": 999.8526387209288,
+        "priest": 1015.7079917108898,
         "nightwalker": 1000,
         "warrior": 1000
     },
@@ -10,7 +10,7 @@
         "mage": 1000,
         "archer": 1000,
         "priest": 1000,
-        "nightwalker": 1031.8526387209288,
+        "nightwalker": 1047.70799171089,
         "warrior": 1000
     },
     "Ginko#5284": {
@@ -35,7 +35,7 @@
         "warrior": 1000
     },
     "Kyo#3187": {
-        "mage": 1016.0,
+        "mage": 1000.144647010039,
         "archer": 1015.8526387209288,
         "priest": 1000,
         "nightwalker": 1000,
@@ -57,7 +57,7 @@
     },
     "Hanjo#1111": {
         "mage": 1000,
-        "archer": 1000,
+        "archer": 984.144647010039,
         "priest": 1000,
         "nightwalker": 1000,
         "warrior": 1000
@@ -77,7 +77,7 @@
         "warrior": 1000
     },
     "Cover#7819": {
-        "mage": 1000,
+        "mage": 1015.855352989961,
         "archer": 968.1473612790712,
         "priest": 1000,
         "nightwalker": 1000,
@@ -92,6 +92,41 @@
     },
     "Resk#6449": {
         "mage": 984.1473612790712,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "Exuuz#3834": {
+        "mage": 984.144647010039,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "GOAT#8935": {
+        "mage": 1000,
+        "archer": 1015.855352989961,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "Neme#5992": {
+        "mage": 1000,
+        "archer": 1000,
+        "priest": 984.144647010039,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "FatihCan#4718": {
+        "mage": 1000,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 984.144647010039,
+        "warrior": 1000
+    },
+    "Kerim#3641": {
+        "mage": 1015.855352989961,
         "archer": 1000,
         "priest": 1000,
         "nightwalker": 1000,
