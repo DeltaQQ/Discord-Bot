@@ -95,14 +95,14 @@ async def on_reaction_add(reaction, user):
                 if reaction.emoji == '🇱':
                     update_rating(player_library, lobby.m_team_left, lobby.m_team_right)
                     player_library.update_ranking('../data/player_ranking.json')
-
-                if reaction.emoji == '🇷':
+                elif reaction.emoji == '🇷':
                     update_rating(player_library, lobby.m_team_right, lobby.m_team_left)
                     player_library.update_ranking('../data/player_ranking.json')
-
-                if reaction.emoji == '❌':
+                elif reaction.emoji == '❌':
                     message = "Match aborted! Please register in the queue again! "
                     await lobby.notify_everyone(reaction.message.channel, message)
+                else:
+                    return
 
                 await lobby.delete(reaction.message.channel)
                 player_lobbies.remove(lobby)
