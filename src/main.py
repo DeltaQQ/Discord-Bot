@@ -197,6 +197,8 @@ async def leave(ctx):
             print(f"{str(ctx.author)} left the queue")
 
             await ctx.channel.purge(check=lambda m: m.author == ctx.author)
+        else:
+            await ctx.message.delete()
     else:
         raise Exception
 
