@@ -166,7 +166,7 @@ async def join(ctx, ingame_name=None, ingame_class=None):
             player_lobby.balance_teams()
 
             await player_lobby.ready_message(ctx.channel)
-            task = player_lobby.expired(player_lobbies, discord_client.get_channel(discord_channels['bg-queue']))
+            task = player_lobby.expired(player_lobbies, discord_client.get_channel(discord_channels['bg-queue']), player_queue)
             asyncio.create_task(task)
 
             player_library.persist()

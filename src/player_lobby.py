@@ -20,6 +20,7 @@ class PlayerLobby(Data):
         self.m_deploy_message = None
         self.m_messages = []
         self.m_ready_player = []
+        self.m_idle_player = []
 
     def set_lobby_captain(self, captain):
         self.m_lobby_captain = captain
@@ -30,7 +31,7 @@ class PlayerLobby(Data):
 
         return False
 
-    async def expired(self, player_lobbies, channel):
+    async def expired(self, player_lobbies, channel, player_queue):
         await asyncio.sleep(180)
 
         if not self.ready():
@@ -39,6 +40,10 @@ class PlayerLobby(Data):
 
             await self.notify_everyone(channel, message, emoji)
             await self.delete(channel)
+
+            for player in (self.m_team_left + self.m_team_right):
+                if player not in self.m_idle_player:
+                    player_queue.add_player(player)
 
             player_lobbies.remove(self)
 
@@ -56,7 +61,11 @@ class PlayerLobby(Data):
         for index, message in enumerate(self.m_messages):
             await message.delete(delay=10 if index == len(self.m_messages) - 1 else 0)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_left)])
+        for player in (self.m_team_right + self.m_team_left):
+            if player not in self.m_ready_player:
+                self.m_idle_player.append(player)
+
+        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_idle_player])
 
     async def ready_message(self, channel):
         message = "Ready? Click on the white checkmark! "
