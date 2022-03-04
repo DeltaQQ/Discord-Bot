@@ -81,7 +81,7 @@ async def on_message(message):
         return
 
     if message.channel.id in discord_command_only_channels:
-        if not message.content.startswith('.'):
+        if not message.content.startswith('.') or message.content.startswith('. '):
             raise Exception
 
     await discord_client.process_commands(message)
