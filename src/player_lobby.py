@@ -100,6 +100,7 @@ class PlayerLobby(Data):
         deploy_message += ":regional_indicator_l: Left Team won\n"
         deploy_message += ":regional_indicator_r: Right Team won\n"
         deploy_message += ":x: to abort the match\n"
+        deploy_message += "Don't forget to set equal equipment :exclamation:"
         deploy_message += ":four_leaf_clover: Good luck!\n"
 
         self.m_deploy_message = await channel.send(deploy_message)
