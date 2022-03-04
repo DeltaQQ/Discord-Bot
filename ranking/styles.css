@@ -12,22 +12,17 @@ h1 {
   font-weight: lighter;
 }
 
-.centered {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 #ranking-table {
   align-items: center;
   color: #ecd19a;
   font-family: "Marcellus", serif;
-  font-size: 0.85rem;
+  font-size: 1.4rem;
   text-shadow: 0 0 1px transparent, 0 0 15px rgb(0 0 0 / 80%);
   border: 1px solid #ecd19a8a;
   border-radius: 20px;
   padding: 1rem;
+  table-layout: fixed;
+  width: 100%;
 }
 
 td {

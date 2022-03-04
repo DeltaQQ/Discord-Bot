@@ -1,7 +1,7 @@
 {
     "Delta#6534": {
         "mage": 1000,
-        "archer": 1000,
+        "archer": 984.1460541401241,
         "priest": 1015.7079917108898,
         "nightwalker": 1000,
         "warrior": 1000
@@ -10,11 +10,11 @@
         "mage": 1000,
         "archer": 1000,
         "priest": 1000,
-        "nightwalker": 1047.70799171089,
+        "nightwalker": 1063.5619375707658,
         "warrior": 1000
     },
     "Ginko#5284": {
-        "mage": 1000,
+        "mage": 984.1460541401241,
         "archer": 1000,
         "priest": 1000,
         "nightwalker": 1000,
@@ -71,14 +71,14 @@
     },
     "ibo#1011": {
         "mage": 999.8526387209288,
-        "archer": 1000,
+        "archer": 1015.8539458598759,
         "priest": 1000,
         "nightwalker": 1000,
         "warrior": 1000
     },
     "Cover#7819": {
         "mage": 1015.855352989961,
-        "archer": 968.1473612790712,
+        "archer": 984.0013071389471,
         "priest": 1000,
         "nightwalker": 1000,
         "warrior": 1000
@@ -91,7 +91,7 @@
         "warrior": 1000
     },
     "Resk#6449": {
-        "mage": 984.1473612790712,
+        "mage": 1000.0013071389471,
         "archer": 1000,
         "priest": 1000,
         "nightwalker": 1000,
@@ -105,7 +105,7 @@
         "warrior": 1000
     },
     "GOAT#8935": {
-        "mage": 1000,
+        "mage": 984.1460541401241,
         "archer": 1015.855352989961,
         "priest": 1000,
         "nightwalker": 1000,
@@ -122,11 +122,39 @@
         "mage": 1000,
         "archer": 1000,
         "priest": 1000,
-        "nightwalker": 984.144647010039,
+        "nightwalker": 968.290701150163,
         "warrior": 1000
     },
     "Kerim#3641": {
         "mage": 1015.855352989961,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "vexos#8355": {
+        "mage": 1000,
+        "archer": 984.1460541401241,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "Taner#1675": {
+        "mage": 1015.8539458598759,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "Style#2808": {
+        "mage": 1000,
+        "archer": 1000,
+        "priest": 1000,
+        "nightwalker": 1000,
+        "warrior": 1000
+    },
+    "Shiv#5997": {
+        "mage": 1000,
         "archer": 1000,
         "priest": 1000,
         "nightwalker": 1000,

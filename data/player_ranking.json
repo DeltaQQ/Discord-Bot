@@ -1,70 +1,132 @@
 {
-    "Mesuu#5526": [
+    "1": [
+        "Mesuu#5526",
         "Nightwalker",
-        1047
+        1063
     ],
-    "realclapy#8524": [
-        "Mage",
-        1015
+    "2": [
+        "realclapy#8524",
+        "Archer",
+        1016
     ],
-    "Loak#3253": [
+    "3": [
+        "Loak#3253",
         "Mage",
         1016
     ],
-    "Delta#6534": [
+    "4": [
+        "Delta#6534",
         "Priest",
         1015
     ],
-    "Kyo#3187": [
+    "5": [
+        "Kyo#3187",
+        "Archer",
+        1015
+    ],
+    "6": [
+        "realclapy#8524",
+        "Mage",
+        1015
+    ],
+    "7": [
+        "ibo#1011",
+        "Archer",
+        1015
+    ],
+    "8": [
+        "Cover#7819",
+        "Mage",
+        1015
+    ],
+    "9": [
+        "GOAT#8935",
+        "Archer",
+        1015
+    ],
+    "10": [
+        "Kerim#3641",
+        "Mage",
+        1015
+    ],
+    "11": [
+        "Taner#1675",
+        "Mage",
+        1015
+    ],
+    "12": [
+        "Kyo#3187",
         "Mage",
         1000
     ],
-    "Cover#7819": [
-        "Archer",
-        968
-    ],
-    "GOAT#8935": [
-        "Archer",
-        1015
-    ],
-    "Kerim#3641": [
-        "Mage",
-        1015
-    ],
-    "Plaguu#7828": [
+    "13": [
+        "Plaguu#7828",
         "Priest",
         1000
     ],
-    "ibo#1011": [
+    "14": [
+        "Resk#6449",
+        "Mage",
+        1000
+    ],
+    "15": [
+        "ibo#1011",
         "Mage",
         999
     ],
-    "Hanjo#1111": [
+    "16": [
+        "Delta#6534",
         "Archer",
         984
     ],
-    "Resk#6449": [
+    "17": [
+        "Ginko#5284",
         "Mage",
         984
     ],
-    "Exuuz#3834": [
+    "18": [
+        "Hanjo#1111",
+        "Archer",
+        984
+    ],
+    "19": [
+        "Cover#7819",
+        "Archer",
+        984
+    ],
+    "20": [
+        "Exuuz#3834",
         "Mage",
         984
     ],
-    "Neme#5992": [
+    "21": [
+        "GOAT#8935",
+        "Mage",
+        984
+    ],
+    "22": [
+        "Neme#5992",
         "Priest",
         984
     ],
-    "FatihCan#4718": [
-        "Nightwalker",
+    "23": [
+        "vexos#8355",
+        "Archer",
         984
     ],
-    "Fodrou#4867": [
+    "24": [
+        "Fodrou#4867",
         "Nightwalker",
         968
     ],
-    "Spleef#8495": [
+    "25": [
+        "Spleef#8495",
         "Mage",
+        968
+    ],
+    "26": [
+        "FatihCan#4718",
+        "Nightwalker",
         968
     ]
 }
