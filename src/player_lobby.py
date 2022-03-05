@@ -31,7 +31,7 @@ class PlayerLobby(Data):
 
         return False
 
-    async def expired(self, player_lobbies, channel, player_queue):
+    async def expired(self, player_lobbies, channel, battleground_queue):
         await asyncio.sleep(180)
 
         if not self.ready():
@@ -43,7 +43,7 @@ class PlayerLobby(Data):
 
             for player in (self.m_team_left + self.m_team_right):
                 if player not in self.m_idle_player:
-                    player_queue.add_player(player)
+                    battleground_queue.add_player(player)
 
             player_lobbies.remove(self)
 
@@ -100,7 +100,6 @@ class PlayerLobby(Data):
         deploy_message += ":regional_indicator_l: Left Team won\n"
         deploy_message += ":regional_indicator_r: Right Team won\n"
         deploy_message += ":x: to abort the match\n"
-        deploy_message += "Don't forget to set equal equipment :exclamation:"
         deploy_message += ":four_leaf_clover: Good luck!\n"
 
         self.m_deploy_message = await channel.send(deploy_message)
