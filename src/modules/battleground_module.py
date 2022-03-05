@@ -69,7 +69,7 @@ class BattlegroundModule(commands.Cog, name='battleground-module'):
 
         if not self.m_battleground_queue.already_in_queue(name):
             print(f"{name} joined the queue")
-            player = Player(ctx.author.id, name, ingame_name, ingame_class, rating)
+            player = Player(ctx.author.id, name, ingame_name, ingame_class, rating, [])
             player.m_in_queue = True
             player.m_queue_join_time = time.time()
 
