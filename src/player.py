@@ -3,11 +3,12 @@ import time
 
 
 class Player:
-    def __init__(self, discord_id, name, ingame_name, ingame_class, rank):
+    def __init__(self, discord_id, name, ingame_name, ingame_class, rank, alternative_classes):
         self.m_discord_id = discord_id
         self.m_name = name
         self.m_ingame_name = ingame_name
         self.m_ingame_class = ingame_class
+        self.m_alternative_classes = alternative_classes
         self.m_rank = rank
         self.m_in_queue = False
         self.m_queue_join_time = 0
