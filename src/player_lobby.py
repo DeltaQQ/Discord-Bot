@@ -130,7 +130,7 @@ class PlayerLobby(Data):
         count_per_class_dict = {x: 0 for x in self.m_ingame_class_list}
 
         for player in player_pool:
-            count_per_class_dict[player.m_ingame_class] += 1
+            count_per_class_dict[player.get_active_class()] += 1
 
         class_player_list_dict = {x: [] for x in self.m_ingame_class_list}
 
@@ -163,8 +163,8 @@ class PlayerLobby(Data):
             team_right_value = 0
 
             for player_left, player_right in zip(team_left, team_right):
-                team_left_value += player_left.m_rank
-                team_right_value += player_right.m_rank
+                team_left_value += player_left.get_active_rank()
+                team_right_value += player_right.get_active_rank()
 
             value_difference = abs(team_left_value - team_right_value)
 
@@ -177,5 +177,5 @@ class PlayerLobby(Data):
         self.m_team_left = balanced_team_left
         self.m_team_right = balanced_team_right
 
-        sorted_teams = sorted(self.m_team_left, key=lambda p: p.m_rank, reverse=True)
-        self.set_lobby_captain(sorted_teams[0])
+        team_left_sorted = sorted(self.m_team_left, key=lambda p: p.get_active_rank(), reverse=True)
+        self.set_lobby_captain(team_left_sorted[0])

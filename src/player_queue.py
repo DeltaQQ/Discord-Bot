@@ -20,9 +20,9 @@ class PlayerQueue(Data):
     def size(self):
         return len(self.m_available_players)
 
-    def already_in_queue(self, name):
+    def already_in_queue(self, discord_id):
         for player in self.m_available_players:
-            if name in player.m_name:
+            if player.m_id == discord_id:
                 return True
 
         return False
@@ -38,6 +38,8 @@ class PlayerQueue(Data):
         count_per_class_dict = {x: 0 for x in self.m_ingame_class_list}
 
         for player in self.m_available_players:
-            count_per_class_dict[player.m_ingame_class] += 1
+            for character in player.m_characters:
+                if character.active():
+                    count_per_class_dict[character.m_ingame_class] += 1
 
         return count_per_class_dict

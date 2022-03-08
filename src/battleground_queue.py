@@ -9,29 +9,47 @@ class BattlegroundQueue(PlayerQueue):
         count_per_class_dict = self.get_count_per_class_dict()
 
         player_count = self.size()
+        player_needed = 10
 
         if player_count < 10:
             print("Not enough players available!")
             return
 
-        if count_per_class_dict['priest'] == 1 and player_count - 1 < 10:
+        if count_per_class_dict['priest'] == 1 and player_count - 1 < player_needed:
             print("One Priest missing!")
             return False
 
-        if (count_per_class_dict['nightwalker'] + count_per_class_dict['warrior']) % 2 != 0:
-            if player_count - 1 < 10:
+        player_count -= count_per_class_dict['priest']
+        player_needed -= 2 if count_per_class_dict['priest'] >= 2 else 0
+
+        numer_of_eyes = count_per_class_dict['nightwalker'] + count_per_class_dict['warrior']
+
+        if numer_of_eyes % 2 != 0:
+            if player_count - 1 < player_needed:
                 print("One Eye missing!")
                 return False
 
+        player_count -= numer_of_eyes
+        player_needed -= min(4, int(numer_of_eyes / 2) * 2)
+
         if count_per_class_dict['archer'] % 2 != 0:
-            if player_count - 1 < 10:
+            if player_count - 1 < player_needed:
                 print("One Archer missing!")
                 return False
+
+        player_count -= count_per_class_dict['archer']
+        player_needed -= min(6, int(count_per_class_dict['archer'] / 2) * 2)
 
         if count_per_class_dict['mage'] % 2 != 0:
             if player_count - 1 < 10:
                 print("One Mage missing!")
                 return False
+
+        player_count -= count_per_class_dict['mage']
+        player_needed -= int(count_per_class_dict['mage'] / 2) * 2
+
+        if player_needed > 0:
+            return False
 
         return True
 
@@ -44,7 +62,7 @@ class BattlegroundQueue(PlayerQueue):
 
         # Priest selection
 
-        if count_per_class_dict['priest'] == 2:
+        if count_per_class_dict['priest'] >= 2:
             index = self.find(lambda player: player.m_ingame_class == 'priest')
             player_lobby.m_team_left.append(self.m_available_players.pop(index))
 

@@ -2,6 +2,7 @@ import json
 import operator
 import os
 import sys
+from copy import deepcopy
 
 from utils import Data
 
@@ -29,30 +30,43 @@ class PlayerLibrary(Data):
         with open(self.m_filename, 'w') as player_library:
             json.dump(self.m_player_library, player_library, indent=4)
 
-    def add_player(self, name):
-        start_entry = {x: 1000 for x in self.m_ingame_class_list}
-        self.m_player_library[name] = start_entry
+    def add_player(self, discord_id, ingame_class, ingame_name):
+        self.m_player_library[str(discord_id)] = {ingame_class: {'rank': 1000, 'name': ingame_name}}
 
-    def update_player(self, name, ingame_class, entry):
-        self.m_player_library[name][ingame_class] = entry
+        remaining_class_list = deepcopy(self.m_ingame_class_list)
+        remaining_class_list.remove(ingame_class)
 
-    def remove_player(self, name):
-        del self.m_player_library[name]
+        for ingame_class in remaining_class_list:
+            self.m_player_library[str(discord_id)][ingame_class] = {'rank': 1000, 'name': 'none'}
 
-    def get_rank(self, name, ingame_class):
-        if name not in self.m_player_library:
-            self.add_player(name)
+    def update_player(self, discord_id, ingame_class, ingame_name):
+        self.m_player_library[str(discord_id)][ingame_class]['name'] = ingame_name
 
-        return self.m_player_library[name][ingame_class]
+    def remove_player(self, discord_id):
+        del self.m_player_library[str(discord_id)]
+
+    def get_rank(self, discord_id, ingame_class, ingame_name='none'):
+        if str(discord_id) not in self.m_player_library:
+            self.add_player(discord_id, ingame_class, ingame_name)
+        else:
+            self.update_player(discord_id, ingame_class, ingame_name)
+
+        self.persist()
+
+        return self.m_player_library[str(discord_id)][ingame_class]['rank']
+
+    def get_name(self, discord_id, ingame_class):
+        return self.m_player_library[str(discord_id)][ingame_class]['name']
 
     def update_ranking(self, filename):
         list_everyone = []
 
         for player in self.m_player_library:
             for ingame_class in self.m_player_library[player]:
-                rank = self.get_rank(player, ingame_class)
+                rank = self.m_player_library[player][ingame_class]['rank']
+                name = self.m_player_library[player][ingame_class]['name']
                 if rank != 1000.0:
-                    list_everyone.append((player, ingame_class, int(rank)))
+                    list_everyone.append((name, ingame_class, int(rank)))
 
         list_everyone.sort(key=operator.itemgetter(2), reverse=True)
 
