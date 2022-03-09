@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from src.player_library import PlayerLibrary
 from src.rating_system import update_rating
-from src.playground_queue import PlaygroundQueue
+from src.player_queue import PlayerQueue
 from src.player_lobby import PlayerLobby
 from src.player import Player
 from src.utils import Data
@@ -16,7 +16,7 @@ class PlaygroundModule(commands.Cog, name='playground-module'):
         self.bot = bot
         self.m_data = Data()
         self.m_player_library = PlayerLibrary()
-        self.m_battleground_queue = PlaygroundQueue()
+        self.m_player_queue = PlayerQueue()
         self.m_battleground_lobbies = []
         self.m_lobby_id = 0
 
@@ -65,30 +65,30 @@ class PlaygroundModule(commands.Cog, name='playground-module'):
             raise Exception
 
         name = str(ctx.message.author)
-        rating = self.m_player_library.get_rank(name, ingame_class)
+        rating = self.m_player_library.get_rating(name, ingame_class)
 
-        if not self.m_battleground_queue.already_in_queue(name):
+        if not self.m_player_queue.already_in_queue(name):
             print(f"{name} joined the queue")
             player = Player(ctx.author.id, name, ingame_name, ingame_class, rating)
             player.m_in_queue = True
             player.m_queue_join_time = time.time()
 
             # Schedules a check after one hour to remove idle players from the queue
-            task = player.expired(self.m_battleground_queue, ctx.channel)
+            task = player.expired(self.m_player_queue, ctx.channel)
             asyncio.create_task(task)
 
-            self.m_battleground_queue.add_player(player)
+            self.m_player_queue.add_player(player)
         else:
             print(f"{name} is already in the queue")
             await ctx.message.delete()
 
-        if self.m_battleground_queue.ready_for_matching():
+        if self.m_player_queue.ready_for_matching():
             player_lobby = PlayerLobby(self.m_lobby_id)
-            self.m_battleground_queue.generate_player_lobby(player_lobby)
+            self.m_player_queue.generate_player_lobby(player_lobby)
             player_lobby.balance_teams()
 
             await player_lobby.ready_message(ctx.channel)
-            task = player_lobby.expired(self.m_battleground_lobbies, self.bot.get_channel(self.m_data.m_discord_channels['bg-queue']), self.m_battleground_queue)
+            task = player_lobby.expired(self.m_battleground_lobbies, self.bot.get_channel(self.m_data.m_discord_channels['bg-queue']), self.m_player_queue)
             asyncio.create_task(task)
 
             self.m_player_library.persist()
@@ -96,8 +96,8 @@ class PlaygroundModule(commands.Cog, name='playground-module'):
             print("Lobby is ready!")
 
     async def leave(self, ctx):
-        if self.m_battleground_queue.already_in_queue(str(ctx.author)):
-            self.m_battleground_queue.remove_player(lambda p: p.m_name == str(ctx.author))
+        if self.m_player_queue.already_in_queue(str(ctx.author)):
+            self.m_player_queue.remove_player(lambda p: p.m_name == str(ctx.author))
             print(f"{str(ctx.author)} left the queue")
 
             await ctx.channel.purge(check=lambda m: m.author == ctx.author)

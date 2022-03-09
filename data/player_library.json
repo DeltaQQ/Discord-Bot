@@ -1,24 +1,24 @@
 {
-    "199564715180032000": {
+    "339770100628455424": {
         "mage": {
-            "rank": 1000,
-            "name": "huhuuh"
+            "rank": 1000.0,
+            "name": "serper"
         },
         "archer": {
-            "rank": 1000,
-            "name": "none"
+            "rank": 1000.0,
+            "name": "lokaku"
         },
         "priest": {
-            "rank": 1000,
-            "name": "none"
+            "rank": 1000.0,
+            "name": "code871"
         },
         "nightwalker": {
-            "rank": 1000,
-            "name": "none"
+            "rank": 1016.0,
+            "name": "jett"
         },
         "warrior": {
-            "rank": 1000,
-            "name": "none"
+            "rank": 984.0,
+            "name": "serper"
         }
     }
 }

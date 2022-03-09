@@ -1,5 +1,6 @@
 src/__pycache__/
 src/modules/__pycache__
+data/
 
 *.iml
 *.xml
@@ -7,5 +8,6 @@ src/modules/__pycache__
 *.lock
 *.txt
 *.pyc
+*.json
 
 Pipfile

@@ -39,17 +39,20 @@ class PlayerLibrary(Data):
         for ingame_class in remaining_class_list:
             self.m_player_library[str(discord_id)][ingame_class] = {'rank': 1000, 'name': 'none'}
 
-    def update_player(self, discord_id, ingame_class, ingame_name):
+    def update_player_name(self, discord_id, ingame_class, ingame_name):
         self.m_player_library[str(discord_id)][ingame_class]['name'] = ingame_name
+
+    def update_player_rating(self, discord_id, ingame_class, rating):
+        self.m_player_library[str(discord_id)][ingame_class]['rank'] = rating
 
     def remove_player(self, discord_id):
         del self.m_player_library[str(discord_id)]
 
-    def get_rank(self, discord_id, ingame_class, ingame_name='none'):
+    def get_rating(self, discord_id, ingame_class, ingame_name='none'):
         if str(discord_id) not in self.m_player_library:
             self.add_player(discord_id, ingame_class, ingame_name)
         else:
-            self.update_player(discord_id, ingame_class, ingame_name)
+            self.update_player_name(discord_id, ingame_class, ingame_name)
 
         self.persist()
 

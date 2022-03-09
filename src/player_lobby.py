@@ -26,10 +26,22 @@ class PlayerLobby(Data):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 10:
+        if len(self.m_ready_player) == 1:
             return True
 
         return False
+
+    def contains(self, discord_id):
+        for player in (self.m_team_left + self.m_team_right):
+            if player.m_id == discord_id:
+                return True
+
+        return False
+
+    def get_player(self, discord_id):
+        for player in (self.m_team_left + self.m_team_right):
+            if player.m_id == discord_id:
+                return player
 
     async def expired(self, player_lobbies, channel, battleground_queue):
         await asyncio.sleep(180)
@@ -48,8 +60,8 @@ class PlayerLobby(Data):
             player_lobbies.remove(self)
 
     async def notify_everyone(self, channel, message, emoji_list=None):
-        for user in self.m_team_left + self.m_team_right:
-            message += f"<@{user.m_discord_id}>"
+        for player in (self.m_team_left + self.m_team_right):
+            message += f"<@{player.m_id}>"
 
         self.m_messages.append(await channel.send(message))
 
@@ -71,8 +83,8 @@ class PlayerLobby(Data):
         message = "Ready? Click on the white checkmark! "
         emoji = '✅'
 
-        for user in self.m_team_left + self.m_team_right:
-            message += f"<@{user.m_discord_id}>"
+        for player in (self.m_team_left + self.m_team_right):
+            message += f"<@{player.m_id}>"
 
         self.m_ready_message = await channel.send(message)
         self.m_messages.append(self.m_ready_message)
@@ -83,20 +95,20 @@ class PlayerLobby(Data):
         deploy_message = "Team Left: "
 
         for player in self.m_team_left:
-            deploy_message += player.m_ingame_name + ", "
+            deploy_message += player.get_active_name() + ", "
 
         deploy_message = deploy_message[:-2]
 
         deploy_message += "\nTeam Right: "
 
         for player in self.m_team_right:
-            deploy_message += player.m_ingame_name + ", "
+            deploy_message += player.get_active_name() + ", "
 
         deploy_message = deploy_message[:-2]
 
-        deploy_message += f"\nLobby Captain: <@{self.m_lobby_captain.m_discord_id}>\n"
+        deploy_message += f"\nLobby Captain: <@{self.m_lobby_captain.m_id}>\n"
         deploy_message += "Please create the lobby and invite everybody!\n"
-        deploy_message += f"Report the match result after the game has finished!!! <@{self.m_lobby_captain.m_discord_id}>\n"
+        deploy_message += f"Report the match result after the game has finished!!! <@{self.m_lobby_captain.m_id}>\n"
         deploy_message += ":regional_indicator_l: Left Team won\n"
         deploy_message += ":regional_indicator_r: Right Team won\n"
         deploy_message += ":x: to abort the match\n"
@@ -116,7 +128,7 @@ class PlayerLobby(Data):
         emoji = '❌'
         await self.m_deploy_message.add_reaction(emoji)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in (self.m_team_right + self.m_team_left)])
+        await channel.purge(check=lambda m: m.author.id in [p.m_id for p in (self.m_team_right + self.m_team_left)])
 
         self.m_messages.append(self.m_deploy_message)
 
@@ -135,7 +147,7 @@ class PlayerLobby(Data):
         class_player_list_dict = {x: [] for x in self.m_ingame_class_list}
 
         for player in player_pool:
-            class_player_list_dict[player.m_ingame_class].append(player)
+            class_player_list_dict[player.get_active_class()].append(player)
 
         minimal_difference = sys.maxsize
         balanced_team_left = []

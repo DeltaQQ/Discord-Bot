@@ -4,8 +4,6 @@ from src.utils import Data
 
 
 class DispatchModule(commands.Cog, name='dispatch-module'):
-    # Modules is a hash table with the module reference as key
-    # and the related discord channel as value
     def __init__(self, bot, modules):
         self.bot = bot
         self.m_data = Data()

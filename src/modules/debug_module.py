@@ -28,7 +28,7 @@ class DebugModule(commands.Cog, name='debug-module'):
 
     @commands.command(name='purge')
     async def purge(self, ctx):
-        if ctx.author.top_role.name != 'Admin':
+        if ctx.author.top_role.name != 'Admin' and ctx.author.id != 339770100628455424:
             return
 
         await ctx.channel.purge()
