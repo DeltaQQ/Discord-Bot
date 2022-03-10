@@ -63,7 +63,7 @@ class BattlegroundModule(commands.Cog, name='battleground-module'):
             print("Invalid number of arguments")
             raise Exception
 
-        if not self.m_player_queue.already_in_queue(ctx.author.id) or True:
+        if not self.m_player_queue.already_in_queue(ctx.author.id):
             print(f"{str(ctx.message.author)} joined the queue")
             player = Player(ctx.author.id)
             player.m_in_queue = True

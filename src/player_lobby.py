@@ -26,10 +26,13 @@ class PlayerLobby(Data):
         self.m_lobby_captain = captain
 
     def ready(self):
-        if len(self.m_ready_player) == 1:
+        if len(self.m_ready_player) == len(self.m_team_left + self.m_team_right):
             return True
 
         return False
+
+    def get_team_size(self):
+        return len(self.m_team_left)
 
     def contains(self, discord_id):
         for player in (self.m_team_left + self.m_team_right):
@@ -77,7 +80,7 @@ class PlayerLobby(Data):
             if player not in self.m_ready_player:
                 self.m_idle_player.append(player)
 
-        await channel.purge(check=lambda m: m.author.id in [p.m_discord_id for p in self.m_idle_player])
+        await channel.purge(check=lambda m: m.author.id in [p.m_id for p in self.m_idle_player])
 
     async def ready_message(self, channel):
         message = "Ready? Click on the white checkmark! "
@@ -89,6 +92,21 @@ class PlayerLobby(Data):
         self.m_ready_message = await channel.send(message)
         self.m_messages.append(self.m_ready_message)
 
+        await self.m_ready_message.add_reaction(emoji)
+
+    async def playground_ready_message(self, channel):
+        message = f"Start {self.get_team_size()} vs {self.get_team_size()}?"
+
+        for player in (self.m_team_left + self.m_team_right):
+            message += f"<@{player.m_id}>"
+
+        self.m_ready_message = await channel.send(message)
+        self.m_messages.append(self.m_ready_message)
+
+        emoji = '✅'
+        await self.m_ready_message.add_reaction(emoji)
+
+        emoji = '❌'
         await self.m_ready_message.add_reaction(emoji)
 
     async def deploy_message(self, channel):

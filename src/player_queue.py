@@ -1,3 +1,5 @@
+import time
+
 from utils import Data, timer
 
 from player import Player
@@ -9,6 +11,7 @@ class PlayerQueue(Data):
 
         self.m_available_players = []
         self.m_desired_lobby_size = 0
+        self.m_last_join_time = 0
 
     def find(self, condition):
         index = 0
@@ -28,8 +31,12 @@ class PlayerQueue(Data):
 
         return False
 
+    def time_since_last_join(self):
+        return time.time() - self.m_last_join_time
+
     def add_player(self, player: Player):
         self.m_available_players.append(player)
+        self.m_last_join_time = time.time()
 
     def remove_player(self, condition):
         index = self.find(condition)
